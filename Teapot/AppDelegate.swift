@@ -71,17 +71,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func onIconClick(_ sender: Any?) {
-        showScreensaver(sender: sender)
-        
+        //showScreensaver(sender: sender)
+        /*
         Timer.scheduledTimer(timeInterval: TimeInterval(1), target: self, selector: #selector(AppDelegate.showAlert(_:)), userInfo: nil, repeats: false)
-         
-            //showAlert(sender: sender)
-        //lockScreen3()
+ */
+        
+        lockScreenShouldWork()
+        showAlert(sender: sender)
+        
         //togglePopover(sender: sender)
     }
     
-    @objc func showAlert(_ sender: Any?) {
-    //@objc func showAlert(sender: Any?) {
+    //@objc func showAlert(_ sender: Any?) {
+    @objc func showAlert(sender: Any?) {
         let alert = NSAlert()
         alert.messageText = "Teapot!"
         alert.informativeText = "A helpful coworker has locked your computer for you. Don't forget to lock your computer if it's being left alone!"
@@ -99,6 +101,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         task.launch()
     }
     
+    func turnOffDisplay(sender: Any?) {
+        let task = Process()
+
+        task.launchPath = "/usr/bin/pmset"
+        task.arguments = ["displaysleepnow"]
+        task.launch()
+    }
+    
+    @objc func lockScreenTest() {
+        let sourceRef = CGEventSource(stateID: .combinedSessionState)
+
+        if sourceRef == nil {
+            NSLog("FakeKey: No event source")
+            return
+        }
+
+        let keyDownEvent = CGEvent(keyboardEventSource: sourceRef,
+                                   virtualKey: 0x30,
+                                   keyDown: true)
+        keyDownEvent?.flags = .maskCommand
+        
+        let keyUpEvent = CGEvent(keyboardEventSource: sourceRef,
+                                 virtualKey: 0x30,
+                                 keyDown: false)
+        //keyUpEvent?.flags = .maskCommand
+        
+        keyDownEvent?.post(tap: .cghidEventTap)
+        keyUpEvent?.post(tap: .cghidEventTap)
+        /*let keyUpEvent2 = CGEvent(keyboardEventSource: sourceRef,
+        virtualKey: 0x37,
+        keyDown: false)
+        keyUpEvent2?.post(tap: .cghidEventTap)
+ */
+    }
+    
     @objc func lockScreen() {
         let sourceRef = CGEventSource(stateID: .combinedSessionState)
 
@@ -108,79 +145,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         let keyDownEvent = CGEvent(keyboardEventSource: sourceRef,
-                                   virtualKey: 0x31,
+                                   virtualKey: 0x0C,
                                    keyDown: true)
-        let maskDownRaw = CGEventFlags.maskCommand.rawValue | CGEventFlags.maskShift.rawValue
+        let maskDownRaw = CGEventFlags.maskCommand.rawValue | CGEventFlags.maskControl.rawValue
         let keyDownFlags = CGEventFlags(rawValue: maskDownRaw)
         keyDownEvent?.flags = keyDownFlags
-        //keyDownEvent?.flags = .maskCommand | .maskControl
-        keyDownEvent?.flags = .maskCommand
 
         let keyUpEvent = CGEvent(keyboardEventSource: sourceRef,
-                                 virtualKey: 0x31,
+                                 virtualKey: 0x0C,
                                  keyDown: false)
-        let maskUpRaw = CGEventFlags.maskCommand.rawValue & ~CGEventFlags.maskShift.rawValue
+        /*
+ let maskUpRaw = CGEventFlags.maskCommand.rawValue & ~CGEventFlags.maskShift.rawValue
         let keyUpFlags = CGEventFlags(rawValue: maskUpRaw)
         keyUpEvent?.flags = keyUpFlags
-        keyUpEvent?.flags = .maskCommand
-        
-        keyDownEvent?.post(tap: .cghidEventTap)
-        keyUpEvent?.post(tap: .cghidEventTap)
-    }
-    
-    @objc func lockScreen3() {
-           let sourceRef = CGEventSource(stateID: .combinedSessionState)
-
-        print("hello1")
-           if sourceRef == nil {
-            print("WTF")
-               NSLog("FakeKey: No event source")
-               return
-           }
-print("hello2")
-           let keyDownEvent = CGEvent(keyboardEventSource: sourceRef,
-                                      virtualKey: 0x7E,
-                                      keyDown: true)
-           /*
-           let maskRaw = .maskCommand.rawValue | .maskControl.rawValue
-           let flags = CGEventFlags(rawValue: maskRaw)
-           keyDownEvent?.flags = flags
-    */
-           keyDownEvent?.flags = .maskControl
-
-           let keyUpEvent = CGEvent(keyboardEventSource: sourceRef,
-                                    virtualKey: 0x7E,
-                                    keyDown: false)
-
-           keyDownEvent?.post(tap: .cghidEventTap)
-           keyUpEvent?.post(tap: .cghidEventTap)
-        print("hello3")
-       }
-    
-    @objc func lockScreen2() {
-        let sourceRef = CGEventSource(stateID: .combinedSessionState)
-
-        if sourceRef == nil {
-            NSLog("FakeKey: No event source")
-            return
-        }
-
-        let keyDownEvent = CGEvent(keyboardEventSource: sourceRef,
-                                   virtualKey: 0x31,
-                                   keyDown: true)
-        let maskDownRaw = CGEventFlags.maskCommand.rawValue | CGEventFlags.maskShift.rawValue
-        let keyDownFlags = CGEventFlags(rawValue: maskDownRaw)
-        keyDownEvent?.flags = keyDownFlags
-        //keyDownEvent?.flags = .maskCommand | .maskControl
-        keyDownEvent?.flags = .maskCommand
-
-        let keyUpEvent = CGEvent(keyboardEventSource: sourceRef,
-                                 virtualKey: 0x31,
-                                 keyDown: false)
-        let maskUpRaw = CGEventFlags.maskCommand.rawValue & ~CGEventFlags.maskShift.rawValue
-        let keyUpFlags = CGEventFlags(rawValue: maskUpRaw)
-        keyUpEvent?.flags = keyUpFlags
-        keyUpEvent?.flags = .maskCommand
+ */
         
         keyDownEvent?.post(tap: .cghidEventTap)
         keyUpEvent?.post(tap: .cghidEventTap)
