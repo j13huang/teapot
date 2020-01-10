@@ -76,7 +76,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Timer.scheduledTimer(timeInterval: TimeInterval(1), target: self, selector: #selector(AppDelegate.showAlert(_:)), userInfo: nil, repeats: false)
  */
         
-        lockScreenShouldWork()
+        lockScreen()
         showAlert(sender: sender)
         
         //togglePopover(sender: sender)
@@ -154,11 +154,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let keyUpEvent = CGEvent(keyboardEventSource: sourceRef,
                                  virtualKey: 0x0C,
                                  keyDown: false)
-        /*
- let maskUpRaw = CGEventFlags.maskCommand.rawValue & ~CGEventFlags.maskShift.rawValue
-        let keyUpFlags = CGEventFlags(rawValue: maskUpRaw)
-        keyUpEvent?.flags = keyUpFlags
- */
         
         keyDownEvent?.post(tap: .cghidEventTap)
         keyUpEvent?.post(tap: .cghidEventTap)
